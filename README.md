@@ -4,6 +4,13 @@ This are the shortcuts and things I use on my bash terminal on linux.
 
 **Fell free to clone, use it and share comments and suggestions**
 
+## To install
+
+```bash
+$ git clone https://github.com/max2320/dotfiles.git ~/.config/dotfile
+$ echo "source ~/.config/dotfile/.init" >> ~/.bash_profile
+```
+
 
 ## Shortcuts
 
