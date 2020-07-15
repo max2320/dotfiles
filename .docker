@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+DOCKER_CURRENT_DIR_VOLUME="-v "$(pwd)":/usr/src/app -w /usr/src/app"
+DOCKER_CURRENT_USER="--user $(id -u):$(id -g)"
+
+# DOCKER
+
+## dk-clear-logs
+## Description
+##   Clear all containers logs
+## Usage:
+##   $ dk-clear-logs
+
+alias dk-clear-logs='sudo sh -c "truncate -s 0 /var/lib/docker/containers/*/*-json.log"'
+
+## dkrtmp
+## Description
+##   runs a temporary container from a image (local or remote)
+## Usage:
+##   $ dkrtmp <image>[:<tag>]
+##   $ dkrtmp <image uri>
+
+alias dkrtmp="docker run -it --rm"
+
+## dkrtmp-user
+## Description
+##   runs a temporary container from a image (local or remote)
+##   with the current dir and user configured
+## Usage:
+##   $ dkrtmp-user <image>[:<tag>] [<shell|command>]
+##   $ dkrtmp-user <image uri> [<shell|command>]
+
+dkrtmp-user() {
+  dkrtmp $DOCKER_CURRENT_USER $DOCKER_CURRENT_DIR_VOLUME $@
+}
+
+## dkrtmp-nouser
+## Description
+##   runs a temporary container from a image (local or remote)
+##   only with the current dir mounted
+## Usage:
+##   $ dkrtmp-nouser <image>[:<tag>] [<shell|command>]
+##   $ dkrtmp-nouser <image uri> [<shell|command>]
+
+dkrtmp-nouser() {
+  dkrtmp $DOCKER_CURRENT_DIR_VOLUME $1 bash
+}
+
+## RAW docker images
+for IMAGE_NAME in 'ruby' 'node' 'python'
+do
+  alias dkr-$IMAGE_NAME-user="dkrtmp-user $IMAGE_NAME:latest"
+  alias dkr-$IMAGE_NAME-nouser="dkrtmp-nouser $IMAGE_NAME:latest"
+  alias dkr-$IMAGE_NAME="dkr-$IMAGE_NAME-user"
+done
+
+###############################################
+dkcpcredentials() {
+  docker cp ~/.gitconfig $1:/root/.gitconfig
+  docker cp ~/.ssh/id_rsa $1:/root/.ssh/id_rsa
+}

@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+
+DOCKER_COMPOSE_TEST_PARAMS="-e RAILS_ENV=test -e COVERAGE=true -e NODE_ENV=test -e RAILS_SYSTEM_TESTING_SCREENSHOT=artifact"
+DOCKER_COMPOSE_DISPLAY="-v /tmp/.X11-unix/:/tmp/.X11-unix/ -v /dev/shm:/dev/shm -e DISPLAY"
+DOCKER_COMPOSE_LOG_LINES=20
+
+## DOCKER COMPOSE
+
+## dkc
+## Description
+##   Alias for docker-compose
+## Usage:
+##   $ dkc <docker-compose args>
+
+alias dkc="docker-compose"
+
+## dkc-logs
+## Description
+##   print last lines of container(s) log
+## Usage:
+##  $ dkc-logs [<container>]
+
+alias dkc-logs='dkc logs -f --tail=$DOCKER_COMPOSE_LOG_LINES '
+
+## dkcx
+## Description
+##   attach a terminal into a running docker-compose container
+##   NOTES: support all `docker-compose exec` params
+## Usage:
+##   $ dkcx <container> <shell>
+##   $ dkcx-<bash|sh> <container>
+
+dkcx() {
+  dkc exec $@
+}
+
+## dkc-run
+## Description
+##   runs a temporary docker-compose container
+##   NOTES: support all `docker-compose run` params
+## Usage:
+##   $ dkc-run <container> <shell>
+
+alias dkc-run='dkc run --rm'
+
+## dkc-xrun
+## Description
+##   runs a temporary docker-compose container with display
+##   NOTES: support all `docker-compose run` params
+## Usage:
+##   $ dkc-xrun <container> <shell>
+
+alias dkc-xrun='dkc-run $DOCKER_COMPOSE_DISPLAY '
+
+## dkc-test
+## Description
+##   runs a temporary docker-compose container with test flags
+##   NOTE: there are flags only for ruby and node ony
+## Usage:
+##   $ dkc-test <container> <shell|command>
+##   $ dkct-<bash|sh> <container>
+
+dkc-test() {
+  dkc-run $DOCKER_COMPOSE_TEST_PARAMS $1 $2
+}
+
+## dkc-xtest
+## Description
+##   docker-compose TEST MODE with display
+## Usage:
+##   $ dkc-xtest <container> <shell|command>
+##   $ dkctx-<bash|sh> <container>
+
+dkc-xtest() {
+  dkc-xrun $DOCKER_COMPOSE_TEST_PARAMS $1 $2
+}
+
+## HELPER FUNCTION
+_map_dkc () {
+  eval "$1 $3 $2"
+}
+
+
+for TERM_NAME in 'bash' 'sh'
+do
+  alias "dkct-$TERM_NAME"="_map_dkc dkc-test $TERM_NAME"
+  alias "dkctx-$TERM_NAME"="_map_dkc dkc-xtest $TERM_NAME"
+  alias "dkcx-$TERM_NAME"="_map_dkc dkcx $TERM_NAME"
+done
