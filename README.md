@@ -7,8 +7,8 @@ This are the shortcuts and things I use on my bash terminal on linux.
 ## To install
 
 ```bash
-$ git clone https://github.com/max2320/dotfiles.git ~/.config/dotfile
-$ echo "source ~/.config/dotfile/.init" >> ~/.bash_profile
+$ git clone https://github.com/max2320/dotfiles.git ~/.config/dotfiles
+$ echo "source ~/.config/dotfiles/.init" >> ~/.bash_profile
 ```
 
 
