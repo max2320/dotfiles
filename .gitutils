@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# GIT
+
+## gckp
+## Description
+##   Checkout and pull to a branch
+## Usage:
+##   $ gckp <branch_name>
+
+gckp() {
+  git checkout $1
+  git pull
+}
+
+## g_cls_ck
+## Description
+##   Fresh checkout to a branch:
+##   - Remove the target branch
+##   - Checkout and pull to master
+##   - Checkout to the target branch
+## Usage:
+##   $ gckp <branch_name>
+
+g_cls_ck() {
+  target=$1
+
+  git branch -D $target
+
+  gckp master
+  gckp $target
+}
+
+
+## gck_merge
+## Description
+##   Merge the current branch on the target branch
+##   - Fresh checkout to the target branch
+##   - Merge previous branch content
+## Usage:
+##   $ gckp <branch_name>
+
+gck_merge() {
+  orig=$(git branch --show-current)
+
+  g_cls_ck $1
+
+  git merge $orig
+}

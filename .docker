@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-DOCKER_CURRENT_DIR_VOLUME="-v "$(pwd)":/usr/src/app -w /usr/src/app"
-DOCKER_CURRENT_USER="--user $(id -u):$(id -g)"
+DOCKER_CURRENT_DIR_VOLUME='-v "$(pwd):/usr/src/app" -w /usr/src/app'
+DOCKER_CURRENT_USER="--user $(id -u):$(id -g) -e USER=$(id -u)"
 
 # DOCKER
 
@@ -22,35 +22,48 @@ alias dk-clear-logs='sudo sh -c "truncate -s 0 /var/lib/docker/containers/*/*-js
 
 alias dkrtmp="docker run -it --rm"
 
-## dkrtmp-user
+## dkrtmpuser
 ## Description
 ##   runs a temporary container from a image (local or remote)
 ##   with the current dir and user configured
 ## Usage:
-##   $ dkrtmp-user <image>[:<tag>] [<shell|command>]
-##   $ dkrtmp-user <image uri> [<shell|command>]
+##   $ dkrtmpuser <image>[:<tag>] [<shell|command>]
+##   $ dkrtmpuser <image uri> [<shell|command>]
 
-dkrtmp-user() {
-  dkrtmp $DOCKER_CURRENT_USER $DOCKER_CURRENT_DIR_VOLUME $@
+dkrtmpuser() {
+  dkrtmp $DOCKER_CURRENT_USER -v "$(pwd):/usr/src/app" -w /usr/src/app $@
 }
 
-## dkrtmp-nouser
+## dkrtmpnouser
 ## Description
 ##   runs a temporary container from a image (local or remote)
 ##   only with the current dir mounted
 ## Usage:
-##   $ dkrtmp-nouser <image>[:<tag>] [<shell|command>]
-##   $ dkrtmp-nouser <image uri> [<shell|command>]
+##   $ dkrtmpnouser <image>[:<tag>] [<shell|command>]
+##   $ dkrtmpnouser <image uri> [<shell|command>]
 
-dkrtmp-nouser() {
-  dkrtmp $DOCKER_CURRENT_DIR_VOLUME $1 bash
+dkrtmpnouser() {
+  dkrtmp -v "$(pwd):/usr/src/app" -w /usr/src/app $1 bash
+}
+
+## dkrtmproot
+## Description
+##   runs a temporary container from a image (local or remote)
+##    with the current dir and root configured
+## Usage:
+##   $ dkrtmproot <image>[:<tag>] [<shell|command>]
+##   $ dkrtmproot <image uri> [<shell|command>]
+
+dkrtmproot() {
+  dkrtmp -u root -v "$(pwd):/usr/src/app" -w /usr/src/app $1 bash
 }
 
 ## RAW docker images
-for IMAGE_NAME in 'ruby' 'node' 'python'
+for IMAGE_NAME in 'ruby' 'node' 'python' 'rust'
 do
-  alias dkr-$IMAGE_NAME-user="dkrtmp-user $IMAGE_NAME:latest"
-  alias dkr-$IMAGE_NAME-nouser="dkrtmp-nouser $IMAGE_NAME:latest"
+  alias dkr-$IMAGE_NAME-user="dkrtmpuser $IMAGE_NAME:latest"
+  alias dkr-$IMAGE_NAME-root="dkrtmproot $IMAGE_NAME:latest"
+  alias dkr-$IMAGE_NAME-nouser="dkrtmpnouser $IMAGE_NAME:latest"
   alias dkr-$IMAGE_NAME="dkr-$IMAGE_NAME-user"
 done
 

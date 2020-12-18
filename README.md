@@ -14,6 +14,24 @@ $ echo "source ~/.config/dotfiles/.init" >> ~/.bash_profile
 
 ## Shortcuts
 
+#### Git
+
+```sh
+# Checkout and pull to a branch
+$ gckp <branch_name>
+
+# Fresh checkout to a branch:
+# - Remove the target branch
+# - Checkout and pull to master
+# - Checkout to the target branch
+$ gckp <branch_name>
+
+# Merge the current branch on the target branch
+# - Fresh checkout to the target branch
+# - Merge previous branch content
+$ gckp <branch_name>
+```
+
 #### DOCKER COMPOSE
 
 ```bash
@@ -38,12 +56,12 @@ $ dkc-xrun <container> <shell>
 
 # runs a temporary docker-compose container with test flags
 # NOTE: there are flags only for ruby and node ony
-$ dkc-test <container> <shell|command>
+$ dkctest <container> <shell|command>
 $ dkct-<bash|sh> <container>
 
 # runs a temporary docker-compose container with test flags and display
 # NOTE: there are flags only for ruby and node ony
-$ dkc-xtest <container> <shell|command>
+$ dkcxtest <container> <shell|command>
 $ dkctx-<bash|sh> <container>
 ```
 
@@ -64,13 +82,18 @@ $ dkrtmp <image uri>
 
 # runs a temporary container from a image (local or remote)
 # with the current dir and user configured
-$ dkrtmp-user <image>[:<tag>] [<shell|command>]
-$ dkrtmp-user <image uri> [<shell|command>]
+$ dkrtmpuser <image>[:<tag>] [<shell|command>]
+$ dkrtmpuser <image uri> [<shell|command>]
 
 # runs a temporary container from a image (local or remote)
 # only with the current dir mounted
-$ dkrtmp-nouser <image>[:<tag>] [<shell|command>]
-$ dkrtmp-nouser <image uri> [<shell|command>]
+$ dkrtmpnouser <image>[:<tag>] [<shell|command>]
+$ dkrtmpnouser <image uri> [<shell|command>]
+
+# runs a temporary container from a image (local or remote)
+#  with the current dir and root configured
+$ dkrtmproot <image>[:<tag>] [<shell|command>]
+$ dkrtmproot <image uri> [<shell|command>]
 
 # USEFULL IMAGES SHORTCUTS
 $ dkr-<ruby|pyhton|node>-user [<shell|command>]

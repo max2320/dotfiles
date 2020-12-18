@@ -1,2 +1,3 @@
 source ~/.config/dotfiles/.docker-compose
 source ~/.config/dotfiles/.docker
+source ~/.config/dotfiles/.gitutils
