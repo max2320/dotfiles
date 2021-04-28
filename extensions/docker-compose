@@ -13,7 +13,9 @@ DOCKER_CURRENT_USER="--user $(id -u):$(id -g) -e USER=$(id -u)"
 ## Usage:
 ##   $ dkc <docker-compose args>
 
-alias dkc="docker-compose"
+dkc() {
+  docker-compose $@
+}
 
 ## dkc-logs
 ## Description
@@ -21,7 +23,11 @@ alias dkc="docker-compose"
 ## Usage:
 ##  $ dkc-logs [<container>]
 
-alias dkc-logs='dkc logs -f --tail=$DOCKER_COMPOSE_LOG_LINES '
+dkclogs() {
+  dkc logs -f --tail=$DOCKER_COMPOSE_LOG_LINES $@
+}
+alias dkc-logs='dkclogs'
+
 
 ## dkcx
 ## Description
@@ -42,7 +48,10 @@ dkcx() {
 ## Usage:
 ##   $ dkc-run <container> <shell>
 
-alias dkc-run='dkc run --rm'
+dkcrun() {
+  dkc run --rm $@
+}
+alias dkc-run='dkcrun'
 
 ## dkc-xrun
 ## Description
@@ -51,7 +60,11 @@ alias dkc-run='dkc run --rm'
 ## Usage:
 ##   $ dkc-xrun <container> <shell>
 
-alias dkc-xrun='dkc-run $DOCKER_COMPOSE_DISPLAY '
+dkcxrun(){
+  dkcrun $DOCKER_COMPOSE_DISPLAY $@
+}
+
+alias dkc-xrun='dkcxrun'
 
 ## dkctest
 ## Description
@@ -62,7 +75,7 @@ alias dkc-xrun='dkc-run $DOCKER_COMPOSE_DISPLAY '
 ##   $ dkct-<bash|sh> <container>
 
 dkctest() {
-  dkc-run $DOCKER_COMPOSE_TEST_PARAMS $1 $2
+  dkcxrun $DOCKER_COMPOSE_TEST_PARAMS $1 $2
 }
 
 ## dkcxtest
@@ -73,7 +86,7 @@ dkctest() {
 ##   $ dkctx-<bash|sh> <container>
 
 dkcxtest() {
-  dkc-xrun $DOCKER_COMPOSE_TEST_PARAMS $1 $2
+  dkcxrun $DOCKER_COMPOSE_TEST_PARAMS $1 $2
 }
 
 ## HELPER FUNCTION

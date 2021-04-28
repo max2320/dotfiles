@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+pa_sink() {
+  sh ~/.config/dotfiles/scripts/switch_audio_sink.sh
+}
+
+pa_set_sink() {
+  pa_sink $1
+}

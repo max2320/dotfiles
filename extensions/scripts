@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# Containerized OSX
+OSX_CONTAINER_NAME="osx"
+
+create_osx(){
+  docker run \
+      --device /dev/kvm \
+      --device /dev/snd \
+      --name "$OSX_CONTAINER_NAME" \
+      -v /tmp/.X11-unix:/tmp/.X11-unix \
+      -e "DISPLAY=${DISPLAY:-:0.0}" \
+      sickcodes/docker-osx:latest
+}
+
+start_osx() {
+  if [ ! "$(docker ps -q -f name=$OSX_CONTAINER_NAME)" ]
+  then
+    docker start $OSX_CONTAINER_NAME
+  else
+    create_osx
+  fi
+}
+
+stop_osx(){
+  docker stop $OSX_CONTAINER_NAME
+}

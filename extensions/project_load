@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+DEFAULT_PROJECT_ENVS="$HOME/.config/dotfiles/custom"
+DEFAULT_PROJECTS_FOLDER="$HOME/apps" 
+
+load_client_env() {
+  export CURRENT_PROJECT=$1
+  export WORKDIR="$DEFAULT_PROJECTS_FOLDER/$CURRENT_PROJECT"
+
+  source "$DEFAULT_PROJECT_ENVS/$CURRENT_PROJECT"
+  [ ! -d "$WORKDIR" ] && mkdir $WORKDIR
+  cd $WORKDIR
+}
+
+create_project_env() {
+  cp "$DEFAULT_PROJECT_ENVS/.example" "$DEFAULT_PROJECT_ENVS/$1"
+  echo "code $DEFAULT_PROJECT_ENVS/$1" 
+  client_def_alias $1
+}
+
+pc() {
+  git clone "$GIT_DSN/$1.git" "$WORKDIR/$1"
+}
+
+pca() {
+  for name in $REPOSITORIES_NAMES
+  do
+    [ ! -d "$WORKDIR/$name" ] && pc $name
+  done
+}
+
+
+client_def_alias() {
+  project=$(basename $1)
+  [ -f $1 ] && alias lenv-$project="load_client_env $project" 
+}
+
+client_def_aliases() {
+  for script in "$DEFAULT_PROJECT_ENVS"/*; do
+    client_def_alias $script
+  done
+}
+
+client_def_aliases
+

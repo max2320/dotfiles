@@ -1,3 +1,15 @@
-source ~/.config/dotfiles/.docker-compose
-source ~/.config/dotfiles/.docker
-source ~/.config/dotfiles/.gitutils
+#!/usr/bin/env bash
+
+load_scripts(){
+  for script in "$1"/*; do
+    [ -f $script ] && source $script
+  done
+}
+
+# Load term extensions
+DEFAULT_EXTENSIONS="$HOME/.config/dotfiles/extensions"
+load_scripts $DEFAULT_EXTENSIONS
+
+
+
+alias ssh="TERM=xterm kitty +kitten ssh"
