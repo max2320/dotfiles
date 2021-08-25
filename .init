@@ -11,5 +11,9 @@ DEFAULT_EXTENSIONS="$HOME/.config/dotfiles/extensions"
 load_scripts $DEFAULT_EXTENSIONS
 
 
+# Enables new Docker build UI
+export DOCKER_BUILDKIT=1
 
+
+# Aliases
 alias ssh="TERM=xterm kitty +kitten ssh"

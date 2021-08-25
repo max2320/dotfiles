@@ -29,6 +29,17 @@ pca() {
   done
 }
 
+pp() {
+  cd "$WORKDIR/$1" && git pull
+}
+
+ppa() {
+  for name in $REPOSITORIES_NAMES
+  do
+    [ -d "$WORKDIR/$name" ] && pp $name
+  done
+}
+
 
 client_def_alias() {
   project=$(basename $1)

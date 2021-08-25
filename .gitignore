@@ -1,2 +1,4 @@
 !/custom/.gitkeep
 /custom/
+/configs/polybar/scripts
+/configs/polybar/statuses

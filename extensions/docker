@@ -43,7 +43,7 @@ dkrtmpuser() {
 ##   $ dkrtmpnouser <image uri> [<shell|command>]
 
 dkrtmpnouser() {
-  dkrtmp -v "$(pwd):/usr/src/app" -w /usr/src/app $1 bash
+  dkrtmp -v "$(pwd):/usr/src/app" -w /usr/src/app $@
 }
 
 ## dkrtmproot
@@ -55,11 +55,11 @@ dkrtmpnouser() {
 ##   $ dkrtmproot <image uri> [<shell|command>]
 
 dkrtmproot() {
-  dkrtmp -u root -v "$(pwd):/usr/src/app" -w /usr/src/app $1 bash
+  dkrtmp -u root -v "$(pwd):/usr/src/app" -w /usr/src/app $@
 }
 
 ## RAW docker images
-for IMAGE_NAME in 'ruby' 'node' 'python' 'rust'
+for IMAGE_NAME in 'ruby' 'node' 'python' 'rust' 'postgres'
 do
   alias dkr-$IMAGE_NAME-user="dkrtmpuser $IMAGE_NAME:latest"
   alias dkr-$IMAGE_NAME-root="dkrtmproot $IMAGE_NAME:latest"
