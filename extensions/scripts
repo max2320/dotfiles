@@ -4,13 +4,20 @@
 OSX_CONTAINER_NAME="osx"
 
 create_osx(){
-  docker run \
-      --device /dev/kvm \
-      --device /dev/snd \
-      --name "$OSX_CONTAINER_NAME" \
-      -v /tmp/.X11-unix:/tmp/.X11-unix \
-      -e "DISPLAY=${DISPLAY:-:0.0}" \
-      sickcodes/docker-osx:latest
+  docker rm osx
+  docker run -it \
+    --device /dev/kvm \
+    --device /dev/snd \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v "/run/user/$(id -u)/pulse/native:/tmp/pulseaudio.socket" \
+    -e "DISPLAY=${DISPLAY:-:0.0}" \
+    -e AUDIO_DRIVER=pa,server=unix:/tmp/pulseaudio.socket \
+    -e GENERATE_UNIQUE=true \
+    -e RAM=8 \
+    -p 50922:10022 \
+    --name="osx" \
+    -e MASTER_PLIST_URL='https://raw.githubusercontent.com/sickcodes/osx-serial-generator/master/config-nopicker-custom.plist' \
+    sickcodes/docker-osx:big-sur
 }
 
 start_osx() {
@@ -25,3 +32,27 @@ start_osx() {
 stop_osx(){
   docker stop $OSX_CONTAINER_NAME
 }
+
+
+# lsusb
+
+# sudo usbredirserver -p 7700  <device id>
+
+
+# docker run --rm -it \
+#     --device /dev/kvm \
+#     --device /dev/snd \
+#     -v /tmp/.X11-unix:/tmp/.X11-unix \
+#     -e RAM=8 \
+#     -e EXTRA="-chardev socket,id=usbredirchardev1,port=7700,host=172.17.0.1 -device usb-redir,chardev=usbredirchardev1,id=usbredirdev1,debug=4" \
+#     sickcodes/docker-osx:big-sur
+# #     #  \
+
+
+# docker run --rm -it \
+#     --device /dev/kvm \
+#     --device /dev/snd \
+#     --device /dev/sdb \
+#     -v /tmp/.X11-unix:/tmp/.X11-unix \
+#     -e RAM=8 \
+#     -e EXTRA='-drive file=/dev/sdb,media=disk' sickcodes/docker-osx:big-sur

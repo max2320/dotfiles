@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+
+KUBERNETS_RESOURCES='pod service deployment job cronjob replicaset secret'
+KUBERNETES_LOG_LINES=50
+
+## kb
+## Description
+##   Alias for kubectl
+## Usage:
+##   $ kb <kubectl args>
+
+kb() {
+  kubectl $@
+}
+
+## kb-ctx
+## Description
+##   print current or swtich kubernets context
+## Usage:
+##   $ kb-ctx # print context
+##   $ kb-ctx <context> # switch to context
+
+kb-ctx() {
+  if [[ $# -eq 1 ]]; then
+    kb config use-context $1
+  else
+    kb config current-context
+  fi
+}
+
+## kb-get
+## Description
+##   Get kubernetes components
+## Usage:
+##   $ kb-get # get all components
+##   $ kb-get-<component type>
+##   $ kb-get <component type>
+
+kb-get() {
+  if [[ $# -eq 1 ]]; then
+    kb get $@
+  else
+    kb get all
+  fi
+}
+
+kb-first() {
+  kb-get $1 | grep $2 | awk '{print $1}' |  head -n -1
+}
+
+for resource in $KUBERNETS_RESOURCES
+do
+  alias kb-$resource="kb-get $resource"
+  alias kb-$resource-first="kb-first $resource"
+done
+
+## kb-logs
+## Description
+##   Kubernetes logs
+## Usage:
+##   $ kb-logs <resource name>
+
+kb-logs() {
+  kb logs -f --tail=$KUBERNETES_LOG_LINES $@
+}
+
+## kb-logsa
+## Description
+##   Kubernetes all containers logs
+## Usage:
+##   $ kb-logsa <resource name>
+
+kb-logsa() {
+  kb-logs --all-containers=true $@
+}
+
+## kbx
+## Description
+##   Kubernetes exec with interactive flags
+## Usage:
+##   $ kbx <resource name>
+
+kbx() {
+  if [[ $# -eq 0 ]]; then
+    echo "Missing pod name prefix"
+    return
+  fi
+
+  if [[ $# -eq 1 ]]; then
+    echo "Missing command"
+    return
+  fi
+
+  pod_name=$(kb-pod-first $1)
+
+  echo "Connecting to $pod_name"
+  kubectl exec -it $pod_name -- $2
+}
+
+## kbx-rc
+## Description
+##   Kubernetes exec rails console
+## Usage:
+##   $ kbx-rc <resource name>
+
+kbx-rc() {
+  kbx $1 rails c
+}
+
+## kbx-sh
+## Description
+##   Kubernetes exec rails console
+## Usage:
+##   $ kbx-sh <resource name>
+
+kbx-sh() {
+  kbx $1 sh
+}
+
+## kbx-bash
+## Description
+##   Kubernetes exec rails console
+## Usage:
+##   $ kbx-bash <resource name>
+
+kbx-bash() {
+  kbx $1 bash
+}
+
+# kb-img(){
+#   if [[ $# -eq 1 ]]; then
+#     echo "kb config set image deployment/$1 $2"
+#   else
+
+#     kb config current-context
+#   fi
+# }

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+
+# SSH
+
+## ssh_tunnel
+## Description
+##   Opens a background ssh tunnel
+## Usage:
+##   $ ssh <port> <ssh_dsn>
+
+ssh_tunnel() {
+  ssh -fNT -L $1:localhost:$1 $2
+}

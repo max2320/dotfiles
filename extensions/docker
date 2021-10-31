@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
-
-DOCKER_CURRENT_DIR_VOLUME='-v "$(pwd):/usr/src/app" -w /usr/src/app'
+DOCKER_WORKDIR_PATH=/usr/src/app
 DOCKER_CURRENT_USER="--user $(id -u):$(id -g) -e USER=$(id -u)"
+
+gen_mount_point() {
+  echo "-v $(pwd):$DOCKER_WORKDIR_PATH -w $DOCKER_WORKDIR_PATH"
+}
 
 # DOCKER
 
@@ -31,7 +34,7 @@ alias dkrtmp="docker run -it --rm"
 ##   $ dkrtmpuser <image uri> [<shell|command>]
 
 dkrtmpuser() {
-  dkrtmp $DOCKER_CURRENT_USER -v "$(pwd):/usr/src/app" -w /usr/src/app $@
+  dkrtmp $DOCKER_CURRENT_USER $(gen_mount_point) $@
 }
 
 ## dkrtmpnouser
@@ -43,7 +46,7 @@ dkrtmpuser() {
 ##   $ dkrtmpnouser <image uri> [<shell|command>]
 
 dkrtmpnouser() {
-  dkrtmp -v "$(pwd):/usr/src/app" -w /usr/src/app $@
+  dkrtmp $(gen_mount_point) $@
 }
 
 ## dkrtmproot
@@ -55,11 +58,11 @@ dkrtmpnouser() {
 ##   $ dkrtmproot <image uri> [<shell|command>]
 
 dkrtmproot() {
-  dkrtmp -u root -v "$(pwd):/usr/src/app" -w /usr/src/app $@
+  dkrtmp -u root $(gen_mount_point) $@
 }
 
 ## RAW docker images
-for IMAGE_NAME in 'ruby' 'node' 'python' 'rust' 'postgres'
+for IMAGE_NAME in $DOCKER_PRESET_IMAGES
 do
   alias dkr-$IMAGE_NAME-user="dkrtmpuser $IMAGE_NAME:latest"
   alias dkr-$IMAGE_NAME-root="dkrtmproot $IMAGE_NAME:latest"

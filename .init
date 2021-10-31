@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source $HOME/.config/dotfiles/settings
+
 load_scripts(){
   for script in "$1"/*; do
     [ -f $script ] && source $script
