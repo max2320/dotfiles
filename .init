@@ -2,16 +2,19 @@
 
 source $HOME/.config/dotfiles/settings
 
-load_scripts(){
+load_scripts() {
   for script in "$1"/*; do
     [ -f $script ] && source $script
   done
 }
 
-# Load term extensions
-DEFAULT_EXTENSIONS="$HOME/.config/dotfiles/extensions"
-load_scripts $DEFAULT_EXTENSIONS
+load_extensions() {
+  # Load term extensions
+  DEFAULT_EXTENSIONS="$HOME/.config/dotfiles/extensions"
+  load_scripts $DEFAULT_EXTENSIONS
+}
 
+load_extensions
 
 # Enables new Docker build UI
 export DOCKER_BUILDKIT=1

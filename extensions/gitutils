@@ -47,3 +47,28 @@ gck_merge() {
 
   git merge $orig
 }
+
+
+
+
+pc() {
+  git clone "$GIT_DSN/$1.git" "$WORKDIR/$1"
+}
+
+pca() {
+  for name in $REPOSITORIES_NAMES
+  do
+    [ ! -d "$WORKDIR/$name" ] && pc $name
+  done
+}
+
+pp() {
+  cd "$WORKDIR/$1" && git pull
+}
+
+ppa() {
+  for name in $REPOSITORIES_NAMES
+  do
+    [ -d "$WORKDIR/$name" ] && pp $name
+  done
+}

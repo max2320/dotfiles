@@ -3,34 +3,54 @@
 # Containerized OSX
 OSX_CONTAINER_NAME="osx"
 
-create_osx(){
-  docker rm osx
-  docker run -it \
-    --device /dev/kvm \
-    --device /dev/snd \
-    -v /tmp/.X11-unix:/tmp/.X11-unix \
-    -v "/run/user/$(id -u)/pulse/native:/tmp/pulseaudio.socket" \
-    -e "DISPLAY=${DISPLAY:-:0.0}" \
-    -e AUDIO_DRIVER=pa,server=unix:/tmp/pulseaudio.socket \
-    -e GENERATE_UNIQUE=true \
-    -e RAM=8 \
-    -p 50922:10022 \
-    --name="osx" \
-    -e MASTER_PLIST_URL='https://raw.githubusercontent.com/sickcodes/osx-serial-generator/master/config-nopicker-custom.plist' \
-    sickcodes/docker-osx:big-sur
+create_osx() {
+  DOCKER_BINDINGS="$DOCKER_KVM $DOCKER_SOUND $DOCKER_XDISPLAY"
+
+  AUDIO_BINDINGS="-v /run/user/$(id -u)/pulse/native:/tmp/pulseaudio.socket"
+  AUDIO_BINDINGS+=" -e AUDIO_DRIVER=pa,server=unix:/tmp/pulseaudio.socket"
+
+  ENVS=" -e WIDTH=1920"
+  ENVS+=" -e HEIGHT=1080"
+  ENVS+=" -e RAM=16"
+
+  if [$MACOS_VIRT]; then
+    # enables virtualization inside the VM
+    ENVS+=" -e MASTER_PLIST_URL='https://raw.githubusercontent.com/sickcodes/osx-serial-generator/kvm-opencore-14/config-custom.plist'"
+  else
+    ENVS+=" -e MASTER_PLIST_URL='https://raw.githubusercontent.com/sickcodes/osx-serial-generator/master/config-custom.plist'"
+  fi
+
+  if [ -z ${MACOS_DEVICE_MODEL} ]; then
+    echo $MACOS_DEVICE_MODEL
+    ENVS+=" -e GENERATE_UNIQUE=true"
+  else
+    ENVS+=" -e DEVICE_MODEL=$MACOS_DEVICE_MODEL"
+    ENVS+=" -e SERIAL=$MACOS_SERIAL"
+    ENVS+=" -e BOARD_SERIAL=$MACOS_BOARD_SERIAL"
+    ENVS+=" -e UUID=$MACOS_UUID"
+    ENVS+=" -e MAC_ADDRESS=$MACOS_MAC_ADDRESS"
+  fi
+
+  dkrit -d \
+        $DOCKER_BINDINGS \
+        $AUDIO_BINDINGS \
+        $ENVS \
+        --name=$OSX_CONTAINER_NAME \
+        sickcodes/docker-osx:monterey
 }
 
 start_osx() {
-  if [ ! "$(docker ps -q -f name=$OSX_CONTAINER_NAME)" ]
-  then
-    docker start $OSX_CONTAINER_NAME
-  else
-    create_osx
-  fi
+  docker start $OSX_CONTAINER_NAME
 }
 
 stop_osx(){
   docker stop $OSX_CONTAINER_NAME
+}
+
+
+switch_lp_pi(){
+  # docker build -t lanplay:latest $(pwd)/scripts/lanplan/
+  dkrtmp --rm -e SERVER192.168.0.80:11451 lanplay:latest
 }
 
 
@@ -56,3 +76,20 @@ stop_osx(){
 #     -v /tmp/.X11-unix:/tmp/.X11-unix \
 #     -e RAM=8 \
 #     -e EXTRA='-drive file=/dev/sdb,media=disk' sickcodes/docker-osx:big-sur
+
+
+gen_certificate() {
+  openssl req \
+    -x509 \
+    -nodes \
+    -days 365 \
+    -newkey rsa:2048 \
+    -keyout $1.key \
+    -out $1.crt \
+    -addext "subjectAltName = DNS:*.$2"
+}
+
+install_cert() {
+  sudo cp $1.key /etc/ssl/private/$1.key
+  sudo cp $1.crt /etc/ssl/certs/$1.crt
+}

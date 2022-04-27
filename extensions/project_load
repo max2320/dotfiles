@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
 DEFAULT_PROJECT_ENVS="$HOME/.config/dotfiles/custom"
-DEFAULT_PROJECTS_FOLDER="$HOME/apps" 
+
+# load_client_env
+# Description
+#   Loads the project config file from `./custom/`
+# Usage:
+# load_client_env <project-file>
 
 load_client_env() {
   export CURRENT_PROJECT=$1
@@ -12,45 +17,38 @@ load_client_env() {
   cd $WORKDIR
 }
 
-create_project_env() {
+# prj_create_def
+# Description
+#   Creates the project config file inside `./custom/`
+# Usage:
+# prj_create_def <project-file>
+
+prj_create_def() {
   cp "$DEFAULT_PROJECT_ENVS/.example" "$DEFAULT_PROJECT_ENVS/$1"
-  echo "code $DEFAULT_PROJECT_ENVS/$1" 
-  client_def_alias $1
+  echo "$EDITOR $DEFAULT_PROJECT_ENVS/$1"
+
+  # reload aliases
+  prj_def_aliases
 }
 
-pc() {
-  git clone "$GIT_DSN/$1.git" "$WORKDIR/$1"
-}
+# prj_def_alias
+# Description
+#   Creates the aliases for the project
 
-pca() {
-  for name in $REPOSITORIES_NAMES
-  do
-    [ ! -d "$WORKDIR/$name" ] && pc $name
-  done
-}
-
-pp() {
-  cd "$WORKDIR/$1" && git pull
-}
-
-ppa() {
-  for name in $REPOSITORIES_NAMES
-  do
-    [ -d "$WORKDIR/$name" ] && pp $name
-  done
-}
-
-
-client_def_alias() {
+prj_def_alias() {
   project=$(basename $1)
-  [ -f $1 ] && alias lenv-$project="load_client_env $project" 
+  [ -f $1 ] && alias lenv-$project="load_client_env $project"
 }
 
-client_def_aliases() {
+
+# prj_def_aliases
+# Description
+#   Loads and create the aliases for all projects config files
+
+prj_def_aliases() {
   for script in "$DEFAULT_PROJECT_ENVS"/*; do
-    client_def_alias $script
+    prj_def_alias $script
   done
 }
 
-client_def_aliases
-
+prj_def_aliases

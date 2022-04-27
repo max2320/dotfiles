@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
+
+# Enables new Docker build UI
+export DOCKER_BUILDKIT=1
+
 DOCKER_WORKDIR_PATH=/usr/src/app
 DOCKER_CURRENT_USER="--user $(id -u):$(id -g) -e USER=$(id -u)"
+DOCKER_XDISPLAY="-v /tmp/.X11-unix/:/tmp/.X11-unix/ -v /dev/shm:/dev/shm -e DISPLAY"
+DOCKER_KVM="--device /dev/kvm"
+DOCKER_SOUND="--device /dev/snd"
 
-gen_mount_point() {
+dkc_mount_point() {
   echo "-v $(pwd):$DOCKER_WORKDIR_PATH -w $DOCKER_WORKDIR_PATH"
 }
 
@@ -16,6 +23,16 @@ gen_mount_point() {
 
 alias dk-clear-logs='sudo sh -c "truncate -s 0 /var/lib/docker/containers/*/*-json.log"'
 
+
+## dkrit
+## Description
+##   docker run with interactive
+## Usage:
+##   $ dkrit <image>[:<tag>] ...
+##   $ dkrit <image uri> ...
+
+alias dkrit="docker run -it"
+
 ## dkrtmp
 ## Description
 ##   runs a temporary container from a image (local or remote)
@@ -23,7 +40,7 @@ alias dk-clear-logs='sudo sh -c "truncate -s 0 /var/lib/docker/containers/*/*-js
 ##   $ dkrtmp <image>[:<tag>]
 ##   $ dkrtmp <image uri>
 
-alias dkrtmp="docker run -it --rm"
+alias dkrtmp="dkrit --rm"
 
 ## dkrtmpuser
 ## Description
@@ -34,7 +51,7 @@ alias dkrtmp="docker run -it --rm"
 ##   $ dkrtmpuser <image uri> [<shell|command>]
 
 dkrtmpuser() {
-  dkrtmp $DOCKER_CURRENT_USER $(gen_mount_point) $@
+  dkrtmp $DOCKER_CURRENT_USER $(dkc_mount_point) $@
 }
 
 ## dkrtmpnouser
@@ -46,7 +63,7 @@ dkrtmpuser() {
 ##   $ dkrtmpnouser <image uri> [<shell|command>]
 
 dkrtmpnouser() {
-  dkrtmp $(gen_mount_point) $@
+  dkrtmp $(dkc_mount_point) $@
 }
 
 ## dkrtmproot
@@ -58,7 +75,7 @@ dkrtmpnouser() {
 ##   $ dkrtmproot <image uri> [<shell|command>]
 
 dkrtmproot() {
-  dkrtmp -u root $(gen_mount_point) $@
+  dkrtmp -u root $(dkc_mount_point) $@
 }
 
 ## RAW docker images

@@ -1,4 +1,5 @@
 !/custom/.gitkeep
+!/custom/.example
 /custom/
 /configs/polybar/scripts
 /configs/polybar/statuses

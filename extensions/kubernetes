@@ -109,7 +109,7 @@ kbx-rc() {
 
 ## kbx-sh
 ## Description
-##   Kubernetes exec rails console
+##   Kubernetes exec sh
 ## Usage:
 ##   $ kbx-sh <resource name>
 
@@ -119,7 +119,7 @@ kbx-sh() {
 
 ## kbx-bash
 ## Description
-##   Kubernetes exec rails console
+##   Kubernetes exec bash
 ## Usage:
 ##   $ kbx-bash <resource name>
 
@@ -135,3 +135,14 @@ kbx-bash() {
 #     kb config current-context
 #   fi
 # }
+
+
+## kb-pf
+## Description
+##   Kubernetes port forward
+## Usage:
+##   $ kb-pf <resource name>
+
+kb-pf() {
+  kubectl port-forward $@
+}

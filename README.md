@@ -11,9 +11,26 @@ $ git clone https://github.com/max2320/dotfiles.git ~/.config/dotfiles
 $ echo "source ~/.config/dotfiles/.init" >> ~/.bash_profile
 ```
 
+## Project Auto-loader
 
+The auto-loader the shortcuts to each file on the `custom/` folder using the pattern `lenv-<file_name>`
+
+> By default the projects folder is `~/apps`, if you want to change edit the `DEFAULT_PROJECTS_FOLDER` on the settings file.
+### To create a new project config file
+
+You can create a new project config file running the create shortcut
+```bash
+$ prj_create_def <project-name>
+
+# This will make the `lenv-` command available to jump to the project folder
+$ lenv-<project>
+
+# example
+$ prj_create_def my-new-project
+$ lenv-my-new-project
+```
+> Note: if the project folder does not exists it will be create when you run the lenv-.
 ## Shortcuts
-
 ### Git
 
 ```sh
@@ -75,6 +92,10 @@ $ dkctx-<bash|sh> <container>
 ```bash
 # Clear all containers logs
 $ dk-clear-logs
+
+# runs a container from a image (local or remote) with it flag
+$ dkrit <image>[:<tag>]
+$ dkrit <image uri>
 
 # runs a temporary container from a image (local or remote)
 $ dkrtmp <image>[:<tag>]
@@ -138,14 +159,30 @@ $ kbx-sh <resource name>
 # Kubernetes exec rails console
 $ kbx-bash <resource name>
 
+# Kubernetes port forward
+$ kb-pf <port-forward params>
+
 ```
 
 ### SSH
+
 ```bash
 # Opens a background ssh tunnel
-$ ssh <port> <ssh_dsn>
+$ ssh_tunnel <port> <ssh_dsn>
 ```
 
-### Auto-loader
 
-The auto-loader creates the shortcuts to each file on the `custom/` folder using the pattern `lenv-<file_name>`
+### Random stuff
+
+MacOS monterey VM inside docker using [sickcodes/docker-osx](https://github.com/sickcodes/Docker-OSX)
+```
+# Create MavOS vm
+create_osx
+> To set it up go to https://github.com/sickcodes/Docker-OSX#quick-start-docker-osx
+> Tip: Restart after you do the setup wizard, this will significantly improve the UI response
+
+# Start MacOS vm
+start_osx
+
+$ Force Stop MacOS vm
+stop_osx

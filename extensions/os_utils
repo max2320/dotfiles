@@ -12,3 +12,26 @@
 ssh_tunnel() {
   ssh -fNT -L $1:localhost:$1 $2
 }
+
+
+# USB
+
+## usbctl_reset
+## Description
+##   Reset the usb controllers
+## Usage:
+##   $ usbctl_reset
+
+usbctl_reset() {
+  for i in /sys/bus/pci/drivers/[uoex]hci_hcd/*:*; do
+    [ -e "$i" ] || continue
+    sudo echo "${i%/*}"
+
+    sudo echo "${i##*/}" > "${i%/*}/unbind"
+    sudo echo "${i##*/}" > "${i%/*}/bind"
+  done
+}
+
+bt_battery() {
+  bluetooth_battery $(bluetoothctl info | awk '/^Device/ {print $2}')
+}

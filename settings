@@ -2,3 +2,6 @@
 
 export DEFAULT_PROJECTS_FOLDER="$HOME/apps"
 export DOCKER_PRESET_IMAGES='ruby node python rust postgres'
+export EDITOR="vim"
+export GEDITOR="code"
+

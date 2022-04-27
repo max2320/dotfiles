@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 DOCKER_COMPOSE_TEST_PARAMS="-e RAILS_ENV=test -e COVERAGE=true -e NODE_ENV=test -e RAILS_SYSTEM_TESTING_SCREENSHOT=artifact"
-DOCKER_COMPOSE_DISPLAY="-v /tmp/.X11-unix/:/tmp/.X11-unix/ -v /dev/shm:/dev/shm -e DISPLAY"
+DOCKER_COMPOSE_DISPLAY=$DOCKER_XDISPLAY
 DOCKER_COMPOSE_LOG_LINES=50
 DOCKER_CURRENT_USER="--user $(id -u):$(id -g) -e USER=$(id -u)"
-
+DOCKER_COMPOSE_PREFIXES=""
 ## DOCKER COMPOSE
 
 ## dkc
@@ -14,7 +14,7 @@ DOCKER_CURRENT_USER="--user $(id -u):$(id -g) -e USER=$(id -u)"
 ##   $ dkc <docker-compose args>
 
 dkc() {
-  docker-compose $@
+  docker-compose $DOCKER_COMPOSE_PREFIXES $@
 }
 
 ## dkc-logs
