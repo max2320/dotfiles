@@ -11,7 +11,7 @@ create_osx() {
 
   ENVS=" -e WIDTH=1920"
   ENVS+=" -e HEIGHT=1080"
-  ENVS+=" -e RAM=${MACOS_VIRT:-16}"
+  ENVS+=" -e RAM=${MACOS_MEM:-16}"
   ENVS+=" -p 8888:8888" # VNC
   ENVS+=" -p 50922:10022" # SSH
 
