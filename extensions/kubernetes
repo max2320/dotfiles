@@ -2,6 +2,7 @@
 
 KUBERNETS_RESOURCES='pod service deployment job cronjob replicaset secret'
 KUBERNETES_LOG_LINES=50
+KUBERNETES_LOG_LINES=50
 
 ## kb
 ## Description
@@ -28,6 +29,16 @@ kb-ctx() {
   fi
 }
 
+## kb-nsp
+## Description
+##   print current kubernetes namespace
+## Usage:
+##   $ kb-nsp # print current kubernetes
+
+kb-nsp() {
+  kubectl config view --minify | grep namespace: | tr ": " |awk '{print $2}'
+}
+
 ## kb-get
 ## Description
 ##   Get kubernetes components
@@ -45,7 +56,7 @@ kb-get() {
 }
 
 kb-first() {
-  kb-get $1 | grep $2 | awk '{print $1}' |  head -n -1
+  kb-grep $1 $2 |  head -n 1
 }
 
 for resource in $KUBERNETS_RESOURCES
@@ -74,9 +85,21 @@ kb-logsa() {
   kb-logs --all-containers=true $@
 }
 
+
+## kb-logsap
+## Description
+##   Kubernetes all containers logs with prefix
+## Usage:
+##   $ kb-logsap <prefix>
+
+kb-logsap(){
+  kb-logsa --prefix=true --max-log-requests=100 -l app=$1
+}
+
 ## kbx
 ## Description
-##   Kubernetes exec with interactive flags
+##   Kubernetes exec with interactive flags.
+##   Connects to the first resource available
 ## Usage:
 ##   $ kbx <resource name>
 
@@ -104,7 +127,7 @@ kbx() {
 ##   $ kbx-rc <resource name>
 
 kbx-rc() {
-  kbx $1 rails c
+  kbx $1 -- rails c
 }
 
 ## kbx-sh
@@ -114,7 +137,7 @@ kbx-rc() {
 ##   $ kbx-sh <resource name>
 
 kbx-sh() {
-  kbx $1 sh
+  kbx $1 -- sh
 }
 
 ## kbx-bash
@@ -124,7 +147,7 @@ kbx-sh() {
 ##   $ kbx-bash <resource name>
 
 kbx-bash() {
-  kbx $1 bash
+  kbx $1 -- bash
 }
 
 # kb-img(){
@@ -146,3 +169,75 @@ kbx-bash() {
 kb-pf() {
   kubectl port-forward $@
 }
+
+## kb-restart
+## Description
+##   Kubernetes restart (aka rollout restart)
+## Usage:
+##   $ kb-restart <resource name>
+
+kb-restart() {
+  kb rollout restart $@
+}
+
+## kb-top
+## Description
+##   Kubernetes top pods
+## Usage:
+##   $ kb-top
+
+
+kb-top() {
+  kb top pods -n $(kb-nsp)
+}
+
+## kb-del
+## Description
+##   Kubernetes delete
+## Usage:
+##   $ kb-del <resource name>
+
+kb-del() {
+  kb delete $@
+}
+
+## kb-terminate
+## Description
+##   Kubernetes delete force
+## Usage:
+##   $ kb-terminate <resource name>
+
+kb-terminate() {
+  kb-del $@ --grace-period=0 --force
+}
+
+## kb-grep
+## Description
+##   retunrs all resource names for a keyword search
+## Usage:
+##   $ kb-grep <resource type> <resource name>
+
+kb-grep() {
+  kb-get $1 | grep $2 | awk '{print $1}'
+}
+
+KUBERNETES_FAIL_STATUSES='Error ContainerStatusUnknown OOMKilled'
+
+## kb-sts-fail
+## Description
+##   retunrs all pods with failing statuses
+##   Tracked statueses:
+##     - Error
+##     - ContainerStatusUnknown
+##     - OOMKilled
+## Usage:
+##   $ kb-sts-fail <resource type> <resource name>
+
+kb-sts-fail() {
+  for resource_type in $KUBERNETES_FAIL_STATUSES
+  do
+    kb-grep "pods" $resource_type
+  done
+}
+
+
