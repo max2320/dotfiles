@@ -5,6 +5,8 @@ DOCKER_COMPOSE_DISPLAY=$DOCKER_XDISPLAY
 DOCKER_COMPOSE_LOG_LINES=50
 DOCKER_CURRENT_USER="--user $(id -u):$(id -g) -e USER=$(id -u)"
 DOCKER_COMPOSE_PREFIXES=""
+DOCKER_SOCK_VOLUME="-v /var/run/docker.sock:/var/run/docker.sock"
+
 ## DOCKER COMPOSE
 
 ## dkc
@@ -14,7 +16,7 @@ DOCKER_COMPOSE_PREFIXES=""
 ##   $ dkc <docker-compose args>
 
 dkc() {
-  docker-compose $DOCKER_COMPOSE_PREFIXES $@
+  docker compose $DOCKER_COMPOSE_PREFIXES $@
 }
 
 ## dkc-logs
@@ -27,6 +29,7 @@ dkclogs() {
   dkc logs -f --tail=$DOCKER_COMPOSE_LOG_LINES $@
 }
 alias dkc-logs='dkclogs'
+alias dkc-logst='dkclogs -t'
 
 
 ## dkcx
@@ -100,3 +103,9 @@ do
   alias "dkctx-$TERM_NAME"="_map_dkc dkcxtest $TERM_NAME"
   alias "dkcx-$TERM_NAME"="_map_dkc dkcx $TERM_NAME"
 done
+
+
+dkc-switch (){
+  docker stop $(docker ps |grep "0.0.0.0:443" | awk '{print $1}')
+  dkc start router
+}

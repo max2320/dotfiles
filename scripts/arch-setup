@@ -1,0 +1,104 @@
+#! /bin/bash
+
+
+install_dep(){
+   sudo yay -S --noconfirm $@
+}
+
+link_app_settings(){
+  sudo ln -sLfar $1 $2
+}
+
+install_dev(){
+  install_dep core/base-devel git curl wget
+}
+
+install_polybar() {
+  echo "Installing polybar"
+
+  install_dep extra/polybar extra/playerctl aur/zscroll-git extra/ttf-font-awesome
+
+  link_app_settings $HOME/.config/dotfiles/apps/polybar $HOME/.config/polybar
+}
+
+install_albert() {
+  echo "Installing albert"
+
+  install_dep aur/albert
+
+  link_app_settings $HOME/.config/dotfiles/apps/albert $HOME/.config/albert
+}
+
+
+install_deadd() {
+  echo "Installing deadd"
+
+  install_dep aur/deadd-notification-center-bin
+
+  link_app_settings $HOME/.config/dotfiles/apps/deadd $HOME/.config/deadd
+}
+
+install_kitty() {
+  echo "Installing kitty"
+
+  install_dep extra/kitty extra/kitty-terminfo extra/kitty-shell-integration
+
+  link_app_settings $HOME/.config/dotfiles/apps/kitty $HOME/.config/kitty
+}
+
+
+install_picom() {
+  echo "Installing picom"
+
+  install_dep extra/picom
+
+  link_app_settings $HOME/.config/dotfiles/apps/picom $HOME/.config/picom
+}
+
+install_fonts() {
+  echo "Installing fonts and Glyphs"
+  # Icon fonts
+  install_dep extra/ttf-font-awesome extra/ttf-nerd-fonts-symbols
+
+  # Normal
+  install_dep extra/adobe-source-code-pro-fonts extra/ttf-nerd-fonts-symbols-mono extra/ttf-nerd-fonts-symbols-common
+}
+
+
+install_dev_tools(){
+  echo "Installing Dev"
+  # Dev editor
+  install_dep extra/code aur/code-marketplace
+
+  # Docker
+  install_dep extra/docker extra/docker-buildx extra/docker-compose extra/dive
+
+  # android dev
+  install_dep extra/scrcpy extra/android-tools extra/android-udev
+}
+
+install_browsers(){
+  echo "Installing browsers"
+  # firefox
+  install_dev extra/firefox-developer-edition
+  # chrome
+  install_dev aur/google-chrome
+}
+
+install_randr_tools(){
+  install_dev extra/arandr aur/arandr-indicator-git
+}
+
+install(){
+  install_polybar
+  install_albert
+  install_deadd
+  install_kitty
+  install_picom
+  install_fonts
+  install_dev_tools
+  install_browsers
+  install_randr_tools
+}
+
+install

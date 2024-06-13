@@ -96,6 +96,11 @@ kb-logsap(){
   kb-logsa --prefix=true --max-log-requests=100 -l app=$1
 }
 
+
+kb-logsapt(){
+  kb-logsa --prefix=true --timestamps=true --max-log-requests=100 -l app=$1
+}
+
 ## kbx
 ## Description
 ##   Kubernetes exec with interactive flags.

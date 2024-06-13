@@ -8,9 +8,14 @@ DOCKER_CURRENT_USER="--user $(id -u):$(id -g) -e USER=$(id -u)"
 DOCKER_XDISPLAY="-v /tmp/.X11-unix/:/tmp/.X11-unix/ -v /dev/shm:/dev/shm -e DISPLAY"
 DOCKER_KVM="--device /dev/kvm"
 DOCKER_SOUND="--device /dev/snd"
+DOCKER_TUN="--device=/dev/net/tun --cap-add NET_ADMIN"
 
-dkc_mount_point() {
+dk_mount_point() {
   echo "-v $(pwd):$DOCKER_WORKDIR_PATH -w $DOCKER_WORKDIR_PATH"
+}
+
+dk_user_keys() {
+  echo "-v $HOME/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub:ro -v $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro"
 }
 
 # DOCKER
@@ -31,7 +36,19 @@ alias dk-clear-logs='sudo sh -c "truncate -s 0 /var/lib/docker/containers/*/*-js
 ##   $ dkrit <image>[:<tag>] ...
 ##   $ dkrit <image uri> ...
 
-alias dkrit="docker run -it"
+dkrit(){
+
+  docker run -it $@
+}
+
+## dkxit
+## Description
+##   docker run with interactive
+## Usage:
+##   $ dkxit <image>[:<tag>] ...
+##   $ dkxit <image uri> ...
+
+alias dkxit="docker exec -it"
 
 ## dkrtmp
 ## Description
@@ -51,7 +68,7 @@ alias dkrtmp="dkrit --rm"
 ##   $ dkrtmpuser <image uri> [<shell|command>]
 
 dkrtmpuser() {
-  dkrtmp $DOCKER_CURRENT_USER $(dkc_mount_point) $@
+  dkrtmp $DOCKER_CURRENT_USER $(dk_mount_point) $@
 }
 
 ## dkrtmpnouser
@@ -63,7 +80,7 @@ dkrtmpuser() {
 ##   $ dkrtmpnouser <image uri> [<shell|command>]
 
 dkrtmpnouser() {
-  dkrtmp $(dkc_mount_point) $@
+  dkrtmp $(dk_mount_point) $@
 }
 
 ## dkrtmproot
@@ -75,7 +92,7 @@ dkrtmpnouser() {
 ##   $ dkrtmproot <image uri> [<shell|command>]
 
 dkrtmproot() {
-  dkrtmp -u root $(dkc_mount_point) $@
+  dkrtmp -u root $(dk_mount_point) $@
 }
 
 ## RAW docker images
@@ -91,4 +108,21 @@ done
 dkcpcredentials() {
   docker cp ~/.gitconfig $1:/root/.gitconfig
   docker cp ~/.ssh/id_rsa $1:/root/.ssh/id_rsa
+}
+
+
+dkb(){
+  docker build $@
+}
+
+dk-img-local() {
+  docker images -q "local/$1:latest"
+}
+
+dk-ctx(){
+  if [[ $# -eq 1 ]]; then
+    docker context use $1
+  else
+    docker context show
+  fi
 }

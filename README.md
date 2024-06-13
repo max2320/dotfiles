@@ -135,6 +135,8 @@ $ kb <kubectl args>
 # print current or swtich kubernets context
 $ kb-ctx # print context
 $ kb-ctx <context> # switch to context
+$ kb-nsp # print current kubernetes
+
 
 # Get kubernetes components
 $ kb-get # get all components
@@ -143,9 +145,8 @@ $ kb-get <component type>
 
 # Kubernetes logs
 $ kb-logs <resource name>
-
-# Kubernetes all containers logs
-$ kb-logsa <resource name>
+$ kb-logsa <resource name> # all
+$ kb-logsap <resource name> # all sources
 
 # Kubernetes exec with interactive flags
 $ kbx <resource name>
@@ -162,6 +163,12 @@ $ kbx-bash <resource name>
 # Kubernetes port forward
 $ kb-pf <port-forward params>
 
+
+$ kb-restart <resource name> # restart resource
+$ kb-top # list resource consumption
+$ kb-del <resource name> # delete resource
+$ kb-terminate <resource name> # forcefully delete resource
+$ kb-sts-fail # list all failing pods
 ```
 
 ### SSH
@@ -170,6 +177,13 @@ $ kb-pf <port-forward params>
 # Opens a background ssh tunnel
 $ ssh_tunnel <port> <ssh_dsn>
 ```
+
+
+### Containers
+#### VPN Sandbox
+
+> TODO
+
 
 
 ### Random stuff

@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+# VPN
+
+
+## vpn_build
+## Description
+##   Builds vpn container image
+## Usage:
+##   $ vpn_build
+
+vpn_build() {
+  dkb -t local/vpn:latest --no-cache $HOME/.config/dotfiles/extensions/helpers/vpn
+}
+
+vpn_run() {
+  if [[ "$(dk-img-local vpn 2> /dev/null)" == "" ]]; then
+    vpn_build
+  fi
+
+  local ovpn_file=$1
+
+  HISTORY=$(prj_touch ".bash_history")
+  NETRC=$(prj_touch ".netrc")
+  BASHRC=$(prj_touch ".bashrc")
+
+  CONTAINER_NAME="$(prj_cur_folder)-vpn"
+
+  ARGS="$DOCKER_XDISPLAY $DOCKER_TUN $DOCKER_SOCK_VOLUME"
+  ARGS+=" -v ${NETRC}:/root/.netrc"
+  ARGS+=" -v ${BASHRC}:/root/.bashrc"
+  ARGS+=" -v ${HISTORY}:/root/.bash_history"
+  ARGS+=" -v $WORKDIR/aws:/root/.aws/"
+  ARGS+=" -v $HOME/.config/dotfiles:/root/.config/dotfiles"
+  ARGS+=" $(dk_user_keys)"
+  ARGS+=" -v $(pwd):/opt/vpn"
+  ARGS+=" -v $(pwd)/.ff-profile:/opt/ff-profile"
+  ARGS+=" -v "${KUBECONFIG}:/root/.kube/config""
+  ARGS+=" -v "${HISTORY}:/root/.bash_history""
+
+  dkrtmproot -d $ARGS \
+             -e OVPN_FILE=$ovpn_file \
+             --name $CONTAINER_NAME \
+             local/vpn:latest
+}
+
+vpnx() {
+  CONTAINER_NAME="$(prj_cur_folder)-vpn"
+
+  dkxit $CONTAINER_NAME $@
+}
+
+vpn_stop() {
+  CONTAINER_NAME="$(prj_cur_folder)-vpn"
+
+  docker stop $CONTAINER_NAME
+}

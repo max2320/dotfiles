@@ -6,51 +6,39 @@ OSX_CONTAINER_NAME="osx"
 create_osx() {
   DOCKER_BINDINGS="$DOCKER_KVM $DOCKER_SOUND $DOCKER_XDISPLAY"
 
-  AUDIO_BINDINGS="-v /run/user/$(id -u)/pulse/native:/tmp/pulseaudio.socket"
+  AUDIO_BINDINGS=" -v /run/user/$(id -u)/pulse/native:/tmp/pulseaudio.socket"
   AUDIO_BINDINGS+=" -e AUDIO_DRIVER=pa,server=unix:/tmp/pulseaudio.socket"
 
   ENVS=" -e WIDTH=1920"
   ENVS+=" -e HEIGHT=1080"
-  ENVS+=" -e RAM=${MACOS_MEM:-16}"
+  ENVS+=" -e RAM=16"
+  # ENVS+=" -e CPU=max"
+  # ENVS+=" -e BOOT_ARGS=+vmx"
+
   ENVS+=" -p 8888:8888" # VNC
   ENVS+=" -p 50922:10022" # SSH
 
-  if [$MACOS_VIRT]; then
-    # enables virtualization inside the VM
-    ENVS+=" -e MASTER_PLIST_URL='https://raw.githubusercontent.com/sickcodes/osx-serial-generator/kvm-opencore-14/config-custom.plist'"
-  else
-    ENVS+=" -e MASTER_PLIST_URL='https://raw.githubusercontent.com/sickcodes/osx-serial-generator/master/config-custom.plist'"
-  fi
-
-  if [ -z ${MACOS_DEVICE_MODEL} ]; then
-    echo $MACOS_DEVICE_MODEL
-    ENVS+=" -e GENERATE_UNIQUE=true"
-  else
-    ENVS+=" -e DEVICE_MODEL=$MACOS_DEVICE_MODEL"
-    ENVS+=" -e SERIAL=$MACOS_SERIAL"
-    ENVS+=" -e BOARD_SERIAL=$MACOS_BOARD_SERIAL"
-    ENVS+=" -e UUID=$MACOS_UUID"
-    ENVS+=" -e MAC_ADDRESS=$MACOS_MAC_ADDRESS"
-  fi
+  ENVS+=" -e MASTER_PLIST_URL=https://raw.githubusercontent.com/sickcodes/osx-serial-generator/master/config-custom.plist"
+  ENVS+=" -e GENERATE_UNIQUE=true"
 
   dkrit -d \
-        $DOCKER_BINDINGS \
-        $AUDIO_BINDINGS \
-        $ENVS \
-        --name=$OSX_CONTAINER_NAME \
-        sickcodes/docker-osx:monterey
+    $DOCKER_BINDINGS \
+    $AUDIO_BINDINGS \
+    $ENVS \
+    --name=$OSX_CONTAINER_NAME \
+    sickcodes/docker-osx:ventura
 }
 
 start_osx() {
   docker start $OSX_CONTAINER_NAME
 }
 
-stop_osx(){
+stop_osx() {
   docker stop $OSX_CONTAINER_NAME
 }
 
 
-switch_lp_pi(){
+switch_lp_pi() {
   # docker build -t lanplay:latest $(pwd)/scripts/lanplan/
   dkrtmp --rm -e SERVER192.168.0.80:11451 lanplay:latest
 }
@@ -94,4 +82,27 @@ gen_certificate() {
 install_cert() {
   sudo cp $1.key /etc/ssl/private/$1.key
   sudo cp $1.crt /etc/ssl/certs/$1.crt
+}
+
+
+#usage: $ create_dsn 'username' 'password' 'host'
+create_dsn(){
+
+  local user_name=$1
+  local password=$2
+  local host=$3
+
+  echo "CREATE DATABASE $user_name;" >> "$user_name.dsn"
+  echo "CREATE ROLE $user_name LOGIN PASSWORD '$password';" >> "$user_name.dsn"
+  echo "ALTER DATABASE $user_name OWNER TO $user_name;" >> "$user_name.dsn"
+  local dsn="postgres://$user_name:$password@$host:5432/$user_name"
+
+  echo "HOST: $host" >> "$user_name.dsn"
+  echo "USER: $user_name" >> "$user_name.dsn"
+  echo "DATABASE: $user_name" >> "$user_name.dsn"
+  echo "PASSWORD: $password" >> "$user_name.dsn"
+
+  echo "DSN: $dsn" >> "$user_name.dsn"
+  echo "psql $dsn" >> "$user_name.dsn"
+  echo "pg_dump $dsn" >> "$user_name.dsn"
 }

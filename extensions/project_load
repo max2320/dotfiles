@@ -51,4 +51,24 @@ prj_def_aliases() {
   done
 }
 
+# prj_touch
+# Description
+#   touch file inside of the current project folder
+# Usage:
+#   prj_touch <filename>
+
+prj_touch() {
+  local filename=$1
+
+  fullpath="${WORKDIR}/$filename"
+
+  [ ! -f "$fullpath" ] && touch $fullpath
+
+  echo $fullpath
+}
+
+prj_cur_folder() {
+  echo "$CURRENT_PROJECT-$(basename $PWD)"
+}
+
 prj_def_aliases
