@@ -2,11 +2,11 @@
 
 
 install_dep(){
-   sudo yay -S --noconfirm $@
+  yay -S --noconfirm $@
 }
 
 link_app_settings(){
-  sudo ln -sLfar $1 $2
+  sudo ln -sL $1 $2
 }
 
 install_dev(){
