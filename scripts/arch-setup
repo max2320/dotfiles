@@ -18,7 +18,7 @@ install_polybar() {
 
   install_dep extra/polybar extra/playerctl aur/zscroll-git extra/ttf-font-awesome
 
-  link_app_settings $HOME/.config/dotfiles/apps/polybar $HOME/.config/polybar
+  link_app_settings $HOME/.config/dotfiles/apps/polybar/ $HOME/.config/polybar/
 }
 
 install_albert() {
@@ -26,7 +26,7 @@ install_albert() {
 
   install_dep aur/albert
 
-  link_app_settings $HOME/.config/dotfiles/apps/albert $HOME/.config/albert
+  link_app_settings $HOME/.config/dotfiles/apps/albert/ $HOME/.config/albert/
 }
 
 
@@ -35,7 +35,7 @@ install_deadd() {
 
   install_dep aur/deadd-notification-center-bin
 
-  link_app_settings $HOME/.config/dotfiles/apps/deadd $HOME/.config/deadd
+  link_app_settings $HOME/.config/dotfiles/apps/deadd/ $HOME/.config/deadd/
 }
 
 install_kitty() {
@@ -43,7 +43,7 @@ install_kitty() {
 
   install_dep extra/kitty extra/kitty-terminfo extra/kitty-shell-integration
 
-  link_app_settings $HOME/.config/dotfiles/apps/kitty $HOME/.config/kitty
+  link_app_settings $HOME/.config/dotfiles/apps/kitty/ $HOME/.config/kitty/
 }
 
 
@@ -52,7 +52,7 @@ install_picom() {
 
   install_dep extra/picom
 
-  link_app_settings $HOME/.config/dotfiles/apps/picom $HOME/.config/picom
+  link_app_settings $HOME/.config/dotfiles/apps/picom/ $HOME/.config/picom/
 }
 
 install_fonts() {
@@ -90,6 +90,10 @@ install_browsers(){
 
 install_randr_tools(){
   install_dev extra/arandr aur/arandr-indicator-git
+}
+
+install_tools(){
+  install_dev extra/flameshot aur/spotify 
 }
 
 install(){
