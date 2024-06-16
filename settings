@@ -4,4 +4,6 @@ export DEFAULT_PROJECTS_FOLDER="$HOME/apps"
 export DOCKER_PRESET_IMAGES='ruby node python rust postgres'
 export EDITOR="vim"
 export GEDITOR="code"
-export TERM=xterm-256color
+export TERM="xterm-256color"
+
+eval "$(starship init bash)"

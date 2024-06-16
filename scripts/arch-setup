@@ -75,6 +75,9 @@ install_dev_tools(){
 
   # android dev
   install_dep extra/scrcpy extra/android-tools extra/android-udev
+
+  # startship
+  install_dep extra/starship
 }
 
 install_browsers(){
